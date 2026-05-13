@@ -1,0 +1,26 @@
+# 관심 아파트 실거래가 알림 설정 파일
+
+molit_api_key: "byAmVY1NDVoWvEzAJ7iStTKRkgsMJxZAvPzrbesx2jO3jRvzU++2GCtqZQTZ7slHoAWU/CmxW7KMn/Sm/qjBIw=="
+kakao_access_token: "Uvw48DSkHirM3oByEZ-oLDfFQkTPBo2YAAAAAQoXFO4AAAGeIFLsFJgXPJRhmZ-F"
+
+apartments:
+  # 수원시 영통구 (광교 신도시)
+  - name: 자연앤힐스테이트
+    lawd_cd: "41117"
+
+  - name: 힐스테이트광교
+    lawd_cd: "41117"
+
+  # 용인시 수지구
+  - name: 광교자이더클래스
+    lawd_cd: "41465"
+
+  - name: 광교경남아너스빌
+    lawd_cd: "41465"
+
+  - name: 성복역롯데캐슬골드타운
+    lawd_cd: "41465"
+
+  # 안성시 (타지역)
+  - name: 안성E.TRINITY공도센트럴파크
+    lawd_cd: "41550"
