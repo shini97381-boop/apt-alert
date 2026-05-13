@@ -1,0 +1,36 @@
+name: 아파트 실거래가 알림
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  check-and-notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: seen.json 캐시 복원
+        uses: actions/cache@v4
+        with:
+          path: seen.json
+          key: seen-json-${{ github.run_id }}
+          restore-keys: |
+            seen-json-
+
+      - name: Python 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 패키지 설치
+        run: pip install requests pyyaml xmltodict
+
+      - name: 실거래가 조회 및 알림 발송
+        env:
+          MOLIT_API_KEY: ${{ secrets.MOLIT_API_KEY }}
+          KAKAO_ACCESS_TOKEN: ${{ secrets.KAKAO_ACCESS_TOKEN }}
+        run: python main.py
