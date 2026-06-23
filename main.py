@@ -1,4 +1,4 @@
-# 관심 아파트 실거래가 모니터링 → 카카오 나에게 보내기 알림 스크립트
+# 관심 아파트 실거래가 모니터링 → Webex 봇 알림 스크립트
 
 import requests
 import json
@@ -13,8 +13,8 @@ CONFIG_FILE = os.path.join(os.path.dirname(__file__), "config.yaml")
 SEEN_FILE   = os.path.join(os.path.dirname(__file__), "seen.json")
 LOG_DIR     = os.path.join(os.path.dirname(__file__), "logs")
 
-MOLIT_URL      = "https://apis.data.go.kr/1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTrade"
-KAKAO_MEMO_URL = "https://kapi.kakao.com/v2/api/talk/memo/default/send"
+MOLIT_URL    = "https://apis.data.go.kr/1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTrade"
+WEBEX_URL    = "https://webexapis.com/v1/messages"
 
 
 # ── 파일 I/O ──────────────────────────────────────────────────────────────────
@@ -25,8 +25,10 @@ def load_config():
     # GitHub Actions 환경변수 우선 적용
     if os.environ.get("MOLIT_API_KEY"):
         config["molit_api_key"] = os.environ["MOLIT_API_KEY"]
-    if os.environ.get("KAKAO_ACCESS_TOKEN"):
-        config["kakao_access_token"] = os.environ["KAKAO_ACCESS_TOKEN"]
+    if os.environ.get("WEBEX_BOT_TOKEN"):
+        config["webex_bot_token"] = os.environ["WEBEX_BOT_TOKEN"]
+    if os.environ.get("WEBEX_ROOM_ID"):
+        config["webex_room_id"] = os.environ["WEBEX_ROOM_ID"]
     return config
 
 def load_seen():
@@ -124,25 +126,20 @@ def build_message(item: dict) -> str:
     )
 
 
-# ── 카카오 나에게 보내기 ──────────────────────────────────────────────────────
+# ── Webex 봇 메시지 발송 ──────────────────────────────────────────────────────
 
-def send_kakao(access_token: str, text: str) -> bool:
-    template = {
-        "object_type": "text",
-        "text": text,
-        "link": {
-            "web_url":        "https://rt.molit.go.kr",
-            "mobile_web_url": "https://rt.molit.go.kr",
-        },
-    }
+def send_webex(bot_token: str, room_id: str, text: str) -> bool:
     res = requests.post(
-        KAKAO_MEMO_URL,
-        headers={"Authorization": f"Bearer {access_token}"},
-        data={"template_object": json.dumps(template, ensure_ascii=False)},
+        WEBEX_URL,
+        headers={
+            "Authorization": f"Bearer {bot_token}",
+            "Content-Type": "application/json",
+        },
+        json={"roomId": room_id, "text": text},
         timeout=10,
     )
     if res.status_code != 200:
-        log(f"[WARN] 카카오 발송 실패: {res.status_code} {res.text[:120]}")
+        log(f"[WARN] Webex 발송 실패: {res.status_code} {res.text[:120]}")
     return res.status_code == 200
 
 
@@ -200,7 +197,7 @@ def main():
 
     if new_alerts:
         ok = sum(
-            send_kakao(config["kakao_access_token"], msg)
+            send_webex(config["webex_bot_token"], config["webex_room_id"], msg)
             for msg in new_alerts
         )
         log(f"신규 거래 {len(new_alerts)}건 감지 → {ok}건 발송 완료")
