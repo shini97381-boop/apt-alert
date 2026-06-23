@@ -47,8 +47,9 @@ def save_seen(seen):
 def get_query_months():
     now = datetime.now()
     months = [now.strftime("%Y%m")]
-    prev = now.replace(day=1) - timedelta(days=1)
-    months.append(prev.strftime("%Y%m"))  # 테스트용 전월 추가
+    if now.day <= 5:
+        prev = now.replace(day=1) - timedelta(days=1)
+        months.append(prev.strftime("%Y%m"))
     return months
 
 
