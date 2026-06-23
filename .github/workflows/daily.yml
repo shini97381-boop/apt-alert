@@ -24,7 +24,8 @@ jobs:
       - name: 실거래가 조회 및 알림 발송
         env:
           MOLIT_API_KEY: ${{ secrets.MOLIT_API_KEY }}
-          KAKAO_ACCESS_TOKEN: ${{ secrets.KAKAO_ACCESS_TOKEN }}
+          WEBEX_BOT_TOKEN: ${{ secrets.WEBEX_BOT_TOKEN }}
+          WEBEX_ROOM_ID: ${{ secrets.WEBEX_ROOM_ID }}
         run: python main.py
 
       - name: seen.json 커밋
