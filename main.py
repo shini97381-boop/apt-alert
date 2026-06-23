@@ -45,12 +45,10 @@ def save_seen(seen):
 # ── 조회 대상 월 산출 ─────────────────────────────────────────────────────────
 
 def get_query_months():
-    """당월 조회. 월초 5일 이내면 전월도 포함 (등록 지연 대응)."""
     now = datetime.now()
     months = [now.strftime("%Y%m")]
-    if now.day <= 5:
-        prev = now.replace(day=1) - timedelta(days=1)
-        months.append(prev.strftime("%Y%m"))
+    prev = now.replace(day=1) - timedelta(days=1)
+    months.append(prev.strftime("%Y%m"))  # 테스트용 전월 추가
     return months
 
 
